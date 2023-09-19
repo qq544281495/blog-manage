@@ -1,0 +1,167 @@
+body,
+div,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+pre,
+form,
+fieldset,
+input,
+textarea,
+p,
+blockquote,
+th,
+td {
+  margin: 0;
+  padding: 0;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+fieldset,
+img {
+  border: 0;
+}
+
+address,
+caption,
+cite,
+code,
+dfn,
+em,
+strong,
+th,
+var {
+  font-style: normal;
+  font-weight: normal;
+}
+
+ol,
+ul {
+  list-style: none;
+}
+
+caption,
+th {
+  text-align: left;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: 100%;
+  font-weight: normal;
+}
+
+q:before,
+q:after {
+  content: '.';
+}
+
+abbr,
+acronym {
+  border: 0;
+}
+
+li {
+  list-style: none;
+}
+
+a,
+img {
+  border: none;
+  margin: 0;
+}
+
+body {
+  height: auto;
+  font-family:
+    '微软雅黑',
+    Helvetica Neue,
+    Helvetica,
+    Arial,
+    sans-serif !important;
+}
+
+input,
+select,
+textarea {
+  font-family:
+    '微软雅黑',
+    Helvetica Neue,
+    Helvetica,
+    Arial,
+    sans-serif;
+  outline: none;
+  vertical-align: middle;
+}
+
+i,
+b,
+strong {
+  font-weight: normal;
+  font-style: normal;
+}
+
+a {
+  text-decoration: none;
+  cursor: pointer;
+  /*手机端点中去除选中颜色*/
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+a:link,
+a:hover,
+a:visited,
+a:active,
+a:focus {
+  text-decoration: none;
+  outline: none;
+}
+
+html {
+  width: 100%;
+  -webkit-text-size-adjust: none;
+  -moz-text-size-adjust: none;
+  -ms-text-size-adjust: none;
+  -o-text-size-adjust: none;
+  text-size-adjust: none;
+}
+
+*,
+*:after,
+*:before {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+.clearfix:after {
+  content: '.';
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
+.clearfix {
+  display: inline-block;
+}
