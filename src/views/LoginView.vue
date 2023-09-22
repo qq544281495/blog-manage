@@ -6,11 +6,19 @@
         <img src="@/assets/images/login_name.png" />
         <span class="content">博客管理系统</span>
       </div>
-      <el-form class="form-content" label-position="top" label-width="100px" :model="loginForm">
-        <el-form-item label="邮箱">
+      <el-form
+        class="form-content"
+        label-position="top"
+        label-width="100px"
+        :model="loginForm"
+        :rules="rules"
+        ref="loginForm"
+        :hide-required-asterisk="true"
+      >
+        <el-form-item label="邮箱" prop="email" :error="formError.email">
           <el-input v-model="loginForm.email" type="text" placeholder="请输入邮箱" size="large" />
         </el-form-item>
-        <el-form-item label="密码">
+        <el-form-item label="密码" prop="password" :error="formError.password">
           <el-input
             v-model="loginForm.password"
             type="password"
@@ -20,7 +28,7 @@
           />
         </el-form-item>
         <el-form-item>
-          <el-button class="form-submit" size="large">立即登录</el-button>
+          <el-button class="form-submit" size="large" @click="login">立即登录</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -34,7 +42,42 @@ export default {
       loginForm: {
         email: '',
         password: ''
+      },
+      formError: {
+        email: '',
+        password: ''
+      },
+      rules: {
+        email: [{ required: true, message: '请输入邮箱', trigger: 'blur' }],
+        password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
       }
+    }
+  },
+  methods: {
+    async login() {
+      this.$refs['loginForm'].validate(async (valid) => {
+        if (valid) {
+          let { data, error } = await this.$api.login(this.loginForm)
+          if (data) {
+            this.$message.success('登录成功')
+            this.$store.commit('user/SET_USER', data)
+            this.$router.push({ path: '/content' })
+          }
+          // 服务器返回错误提示
+          if (error) {
+            if (Array.isArray(error)) {
+              for (let item of error) {
+                this.formError[item.path] = item.msg
+              }
+            } else {
+              this.formError.email = error
+              this.formError.password = error
+            }
+          }
+        } else {
+          return false
+        }
+      })
     }
   }
 }
@@ -91,16 +134,6 @@ export default {
         width: 100%;
         background: #cf6764;
         color: #fff;
-      }
-
-      .el-button {
-        --el-button-active-text-color: #cf6764;
-        --el-button-active-border-color: #cf6764;
-      }
-
-      .el-input {
-        --el-input-focus-border: #e4997b;
-        --el-input-focus-border-color: #e4997b;
       }
     }
   }
