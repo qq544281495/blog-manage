@@ -42,11 +42,6 @@ const router = createRouter({
           component: () => import('../views/ClassifyView.vue')
         },
         {
-          path: '/image',
-          name: 'image',
-          component: () => import('../views/ImageView.vue')
-        },
-        {
           path: '/message',
           name: 'message',
           component: () => import('../views/MessageView.vue')

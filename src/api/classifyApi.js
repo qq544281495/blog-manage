@@ -1,5 +1,5 @@
 /**
- * 文章接口
+ * 分类接口
  */
 import request from '@/utils/request'
 export default {

@@ -29,10 +29,6 @@
           <el-icon><FolderOpened /></el-icon>
           <span>分类</span>
         </el-menu-item>
-        <el-menu-item index="/image" @click="skip('image')">
-          <el-icon><Camera /></el-icon>
-          <span>图片</span>
-        </el-menu-item>
         <el-menu-item index="/message" @click="skip('message')">
           <el-icon><ChatDotRound /></el-icon>
           <span>留言</span>
