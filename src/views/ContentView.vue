@@ -145,7 +145,7 @@ export default {
   position: absolute;
   width: 100vw;
   height: 100%;
-  min-width: 768px;
+  min-width: 992px;
   .content-nav {
     display: flex;
     position: relative;

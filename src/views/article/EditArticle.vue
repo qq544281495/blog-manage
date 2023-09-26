@@ -45,10 +45,9 @@
       </el-form-item>
       <el-form-item label="文章封面：">
         <div class="upload-box">
-          <template v-if="article.coverImage === ''">
-            <input class="upload-input" type="file" />
-            <el-icon class="upload-icon"><Plus /></el-icon>
-          </template>
+          <input class="upload-input" type="file" @change="uploadCover" />
+          <el-icon v-if="article.coverImage == ''" class="upload-icon"><Plus /></el-icon>
+          <img v-else :src="showCover" alt="文章封面" class="cover-image" />
         </div>
       </el-form-item>
       <el-form-item>
@@ -70,6 +69,7 @@ export default {
         content: '',
         coverImage: ''
       },
+      showCover: '',
       labelOptions: [
         {
           value: 'HTML',
@@ -112,6 +112,18 @@ export default {
     },
     changeEditorContent(value, render) {
       this.article.content = render
+    },
+    uploadCover(event) {
+      let file = event.target.files[0]
+      this.article.coverImage = file
+      let reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => {
+        this.showCover = reader.result
+      }
+      reader.onerror = function (error) {
+        throw new Error(error)
+      }
     }
   }
 }
@@ -130,6 +142,8 @@ export default {
 
   .upload-box {
     position: relative;
+    width: 178px;
+    height: 89px;
     border: 1px dashed #d9d9d9;
     .upload-input {
       width: 178px;
@@ -145,6 +159,15 @@ export default {
       left: 50%;
       transform: translate(-50%, -50%);
       z-index: -1;
+    }
+
+    .cover-image {
+      position: absolute;
+      z-index: -1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
     }
 
     &:hover {
