@@ -33,7 +33,7 @@
         <el-table-column prop="classify" label="分类" />
         <el-table-column prop="cover" label="默认封面">
           <template #default="scope">
-            <img :src="imageBaseUrl + scope.row.cover" style="width: 120px; height: auto" />
+            <img :src="imageBaseUrl + scope.row.cover" style="width: 120px; height: 46px" />
           </template>
         </el-table-column>
         <el-table-column prop="publish" label="发布状态">

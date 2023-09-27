@@ -16,7 +16,7 @@
             <el-icon><Reading /></el-icon>
             <span>文章</span>
           </template>
-          <el-menu-item index="/editArticle" @click="skip('editArticle')">发布文章</el-menu-item>
+          <el-menu-item index="/editArticle" @click="skip('editArticle')">文章编辑</el-menu-item>
           <el-menu-item index="/manageArticle" @click="skip('manageArticle')"
             >文章管理</el-menu-item
           >
@@ -111,7 +111,12 @@ export default {
     return {
       isCollapse: false,
       imageBaseUrl: config.imageBaseUrl,
-      activeMenu: location.pathname
+      activeMenu: this.$route.path
+    }
+  },
+  watch: {
+    $route(route) {
+      this.activeMenu = route.path
     }
   },
   methods: {

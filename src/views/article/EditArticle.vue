@@ -1,11 +1,17 @@
 <template>
   <div class="edit-view">
-    <h2 class="view-title">发布文章</h2>
-    <el-form :model="article" label-position="left">
-      <el-form-item label="文章标题：">
+    <h2 class="view-title">文章编辑</h2>
+    <el-form
+      ref="articleForm"
+      :model="article"
+      label-position="left"
+      :rules="rules"
+      :hide-required-asterisk="true"
+    >
+      <el-form-item label="文章标题：" prop="title">
         <el-input v-model="article.title" placeholder="请输入文章标题" style="width: 100%" />
       </el-form-item>
-      <el-form-item>
+      <el-form-item prop="content">
         <mavon-editor
           ref="editor"
           v-model="article.content"
@@ -15,17 +21,22 @@
           style="width: 100%; height: 600px"
         />
       </el-form-item>
-      <el-form-item label="文章分类：">
-        <el-select v-model="article.type" placeholder="请选择文章分类" style="width: 394px">
+      <el-form-item label="文章分类：" prop="classify">
+        <el-select
+          v-model="article.classify"
+          @change="selectClassify"
+          placeholder="请选择文章分类"
+          style="width: 394px"
+        >
           <el-option
-            v-for="item in typeOptions"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
+            v-for="item in classifyOptions"
+            :key="item._id"
+            :label="item.classify"
+            :value="item._id"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="文章标签：">
+      <el-form-item label="文章标签：" prop="label">
         <el-select
           v-model="article.label"
           multiple
@@ -37,21 +48,26 @@
         >
           <el-option
             v-for="item in labelOptions"
-            :key="item.value"
+            :key="item._id"
             :label="item.label"
-            :value="item.value"
+            :value="item._id"
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="文章封面：">
+      <el-form-item label="文章封面：" prop="cover">
         <div class="upload-box">
           <input class="upload-input" type="file" @change="uploadCover" />
-          <el-icon v-if="article.coverImage == ''" class="upload-icon"><Plus /></el-icon>
+          <el-icon v-if="article.cover == ''" class="upload-icon"><Plus /></el-icon>
           <img v-else :src="showCover" alt="文章封面" class="cover-image" />
         </div>
       </el-form-item>
+      <el-form-item label="发布状态：" prop="publish">
+        <el-switch v-model="article.publish" :active-value="1" :inactive-value="0" />
+      </el-form-item>
       <el-form-item>
-        <el-button class="form-submit" size="large">发布文章</el-button>
+        <el-button class="form-submit" size="large" @click="publishArticle">{{
+          typeTitle
+        }}</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -62,38 +78,25 @@ import config from '@/config'
 export default {
   data() {
     return {
+      type: 'create',
+      typeTitle: '发布文章',
       article: {
         title: '',
-        type: '',
-        label: '',
+        classify: '',
+        label: [],
         content: '',
-        coverImage: ''
+        cover: '',
+        publish: 1
       },
+      imageBaseUrl: config.imageBaseUrl,
       showCover: '',
-      labelOptions: [
-        {
-          value: 'HTML',
-          label: 'HTML'
-        },
-        {
-          value: 'CSS',
-          label: 'CSS'
-        },
-        {
-          value: 'JavaScript',
-          label: 'JavaScript'
-        },
-        {
-          value: 'NodeJS',
-          label: 'NodeJS'
-        }
-      ],
-      typeOptions: [
-        {
-          value: '前端基础',
-          label: '前端基础'
-        }
-      ]
+      labelOptions: [],
+      classifyOptions: [],
+      rules: {
+        title: [{ required: true, message: '请输入文章标签', trigger: 'blur' }],
+        content: [{ required: true, message: '请编辑文章内容', trigger: 'blur' }],
+        classify: [{ required: true, message: '请选择文章分类', trigger: 'change' }]
+      }
     }
   },
   methods: {
@@ -101,12 +104,12 @@ export default {
       let formData = new FormData()
       formData.append('articleImage', imageFile)
       let { data } = await this.$api.uploadImage(formData)
-      let imageUrl = config.imageBaseUrl + data.articleImage
+      let imageUrl = this.imageBaseUrl + data.articleImage
       this.$refs.editor.$img2Url(filename, imageUrl)
     },
     async deleteImage(filename) {
       let deleteFile = filename[0]
-      let articleImage = deleteFile.replace(config.imageBaseUrl, '')
+      let articleImage = deleteFile.replace(this.imageBaseUrl, '')
       let { data } = await this.$api.deleteImage({ articleImage })
       this.$message.success({ message: data.message })
     },
@@ -115,7 +118,7 @@ export default {
     },
     uploadCover(event) {
       let file = event.target.files[0]
-      this.article.coverImage = file
+      this.article.cover = file
       let reader = new FileReader()
       reader.readAsDataURL(file)
       reader.onload = () => {
@@ -124,6 +127,62 @@ export default {
       reader.onerror = function (error) {
         throw new Error(error)
       }
+      event.target.value = ''
+    },
+    async getClassify() {
+      let { data } = await this.$api.searchClassify()
+      this.classifyOptions = data.list
+    },
+    async selectClassify() {
+      if (this.article.classify) {
+        let params = { classify: this.article.classify }
+        let { data } = await this.$api.searchLabel(params)
+        this.labelOptions = data.list
+      }
+    },
+    async publishArticle() {
+      this.$refs['articleForm'].validate(async (valid) => {
+        if (valid) {
+          let formData = new FormData()
+          formData.append('title', this.article.title)
+          formData.append('content', this.article.content)
+          formData.append('classify', this.article.classify)
+          formData.append('label', this.article.label)
+          formData.append('cover', this.article.cover)
+          formData.append('publish', this.article.publish)
+          if (this.type === 'create') {
+            let { data } = await this.$api.uploadArticle(formData)
+            this.$message.success(data.message)
+          } else if (this.type === 'edit') {
+            formData.append('id', this.article._id)
+            let { data } = await this.$api.updateArticle(formData)
+            this.$message.success(data.message)
+          }
+          this.$refs['articleForm'].resetFields()
+          this.$router.push({ path: '/manageArticle' })
+        } else {
+          return false
+        }
+      })
+    },
+    async getArticleDetail(id) {
+      let { data } = await this.$api.articleDetail({ id })
+      data.classify = data.classify._id
+      data.label = data.label.map((item) => item._id)
+      this.article = data
+      this.selectClassify()
+      this.showCover = this.imageBaseUrl + this.article.cover
+    }
+  },
+  mounted() {
+    this.getClassify()
+    if (this.$route.query.id) {
+      this.type = 'edit'
+      this.typeTitle = '更新文章'
+      this.getArticleDetail(this.$route.query.id)
+    } else {
+      this.type = 'create'
+      this.typeTitle = '发布文章'
     }
   }
 }
