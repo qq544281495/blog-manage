@@ -3,16 +3,6 @@
  */
 import request from '@/utils/request'
 export default {
-  // 文章图片上传
-  uploadImage(data) {
-    return request.post('/article/uploadImage', data, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    })
-  },
-  // 文章图片删除
-  deleteImage(data) {
-    return request.delete('/article//deleteImage', data)
-  },
   // 文章上传
   uploadArticle(data) {
     return request.post('/article/uploadArticle', data, {
@@ -34,5 +24,17 @@ export default {
   // 删除文章
   deleteArticle(data) {
     return request.delete('/article/delete', data)
+  },
+  // 获取文章评论
+  getArticleComment(data) {
+    return request.post('/articleComment/search', data)
+  },
+  // 删除文章评论
+  deleteArticleComment(data) {
+    return request.delete('/articleComment/delete', data)
+  },
+  // 更新文章评论
+  updateArticleComment(data) {
+    return request.put('/articleComment/update', data)
   }
 }

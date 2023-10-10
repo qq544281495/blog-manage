@@ -32,6 +32,21 @@ const router = createRouter({
           component: () => import('../views/article/ManageArticle.vue')
         },
         {
+          path: '/articleComment',
+          name: 'articleComment',
+          component: () => import('../views/article/ArticleComment.vue')
+        },
+        {
+          path: '/editProject',
+          name: 'editProject',
+          component: () => import('../views/project/EditProject.vue')
+        },
+        {
+          path: '/manageProject',
+          name: 'manageProject',
+          component: () => import('../views/project/ManageProject.vue')
+        },
+        {
           path: '/label',
           name: 'label',
           component: () => import('../views/LabelView.vue')
@@ -40,11 +55,6 @@ const router = createRouter({
           path: '/classify',
           name: 'classify',
           component: () => import('../views/ClassifyView.vue')
-        },
-        {
-          path: '/message',
-          name: 'message',
-          component: () => import('../views/MessageView.vue')
         }
       ]
     }

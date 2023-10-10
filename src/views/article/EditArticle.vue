@@ -14,7 +14,7 @@
       <el-form-item prop="content">
         <mavon-editor
           ref="editor"
-          v-model="article.content"
+          v-model="article.editContent"
           @imgAdd="uploadImage"
           @imgDel="deleteImage"
           @change="changeEditorContent"
@@ -54,6 +54,16 @@
           />
         </el-select>
       </el-form-item>
+      <el-form-item label="文章描述：" prop="description">
+        <el-input
+          v-model="article.description"
+          :rows="4"
+          type="textarea"
+          placeholder="请输入文章描述"
+          resize="none"
+          style="width: 394px"
+        />
+      </el-form-item>
       <el-form-item label="文章封面：" prop="cover">
         <div class="upload-box">
           <input class="upload-input" type="file" @change="uploadCover" />
@@ -85,6 +95,8 @@ export default {
         classify: '',
         label: [],
         content: '',
+        editContent: '',
+        description: '',
         cover: '',
         publish: 1
       },
@@ -95,22 +107,23 @@ export default {
       rules: {
         title: [{ required: true, message: '请输入文章标签', trigger: 'blur' }],
         content: [{ required: true, message: '请编辑文章内容', trigger: 'blur' }],
-        classify: [{ required: true, message: '请选择文章分类', trigger: 'change' }]
+        classify: [{ required: true, message: '请选择文章分类', trigger: 'change' }],
+        description: [{ required: true, message: '请输入项目描述', trigger: 'blur' }]
       }
     }
   },
   methods: {
     async uploadImage(filename, imageFile) {
       let formData = new FormData()
-      formData.append('articleImage', imageFile)
+      formData.append('image', imageFile)
       let { data } = await this.$api.uploadImage(formData)
-      let imageUrl = this.imageBaseUrl + data.articleImage
+      let imageUrl = this.imageBaseUrl + data.image
       this.$refs.editor.$img2Url(filename, imageUrl)
     },
     async deleteImage(filename) {
       let deleteFile = filename[0]
-      let articleImage = deleteFile.replace(this.imageBaseUrl, '')
-      let { data } = await this.$api.deleteImage({ articleImage })
+      let image = deleteFile.replace(this.imageBaseUrl, '')
+      let { data } = await this.$api.deleteImage({ image })
       this.$message.success({ message: data.message })
     },
     changeEditorContent(value, render) {
@@ -146,10 +159,12 @@ export default {
           let formData = new FormData()
           formData.append('title', this.article.title)
           formData.append('content', this.article.content)
+          formData.append('editContent', this.article.editContent)
           formData.append('classify', this.article.classify)
           formData.append('label', this.article.label)
           formData.append('cover', this.article.cover)
           formData.append('publish', this.article.publish)
+          formData.append('description', this.article.description)
           if (this.type === 'create') {
             let { data } = await this.$api.uploadArticle(formData)
             this.$message.success(data.message)

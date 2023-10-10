@@ -20,6 +20,19 @@
           <el-menu-item index="/manageArticle" @click="skip('manageArticle')"
             >文章管理</el-menu-item
           >
+          <el-menu-item index="/articleComment" @click="skip('articleComment')"
+            >文章评论</el-menu-item
+          >
+        </el-sub-menu>
+        <el-sub-menu index="1">
+          <template #title>
+            <el-icon><Reading /></el-icon>
+            <span>项目</span>
+          </template>
+          <el-menu-item index="/editProject" @click="skip('editProject')">项目编辑</el-menu-item>
+          <el-menu-item index="/manageProject" @click="skip('manageProject')"
+            >项目管理</el-menu-item
+          >
         </el-sub-menu>
         <el-menu-item index="/label" @click="skip('label')">
           <el-icon><CollectionTag /></el-icon>
@@ -28,10 +41,6 @@
         <el-menu-item index="/classify" @click="skip('classify')">
           <el-icon><FolderOpened /></el-icon>
           <span>分类</span>
-        </el-menu-item>
-        <el-menu-item index="/message" @click="skip('message')">
-          <el-icon><ChatDotRound /></el-icon>
-          <span>留言</span>
         </el-menu-item>
       </el-menu>
     </div>
