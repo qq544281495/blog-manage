@@ -26,6 +26,21 @@
         @selection-change="selectionProject"
         style="position: absolute; left: 0; top: 0"
       >
+        <el-table-column type="expand">
+          <template #default="scope">
+            <el-table :data="scope.row.links">
+              <el-table-column label="技术栈" prop="name" />
+              <el-table-column label="链接" prop="link" />
+              <el-table-column label="操作">
+                <template #default="link">
+                  <el-button link type="danger" @click="deleteLink(scope.row._id, link.row)"
+                    >删除链接</el-button
+                  >
+                </template>
+              </el-table-column>
+            </el-table>
+          </template>
+        </el-table-column>
         <el-table-column type="selection" width="55" />
         <el-table-column prop="name" label="项目名称" />
         <el-table-column prop="cover" label="项目封面">
@@ -46,6 +61,7 @@
         <el-table-column label="操作">
           <template #default="scope">
             <el-button link type="primary" @click="edit(scope.row)">编辑</el-button>
+            <el-button link type="primary" @click="openDialog(scope.row)">添加链接</el-button>
             <el-button link type="danger" @click="deleteArticle(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -58,6 +74,33 @@
         @current-change="changeCurrentPage"
       />
     </div>
+    <!-- 标签弹窗 -->
+    <el-dialog
+      v-model="dialog"
+      :show-close="false"
+      :close-on-click-modal="false"
+      title="添加链接"
+      width="600px"
+    >
+      <el-form
+        ref="linkForm"
+        :model="linkForm"
+        label-width="100px"
+        :hide-required-asterisk="true"
+        :rules="rules"
+      >
+        <el-form-item label="技术栈：" prop="name">
+          <el-input v-model="linkForm.name" placeholder="请输入技术栈" />
+        </el-form-item>
+        <el-form-item label="链接：" prop="link">
+          <el-input v-model="linkForm.link" placeholder="请输入链接" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="cancelDialog">取消</el-button>
+        <el-button type="primary" @click="addLink">确认</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -72,10 +115,20 @@ export default {
         pageNumber: 1,
         pageSize: 10
       },
+      linkForm: {
+        id: '',
+        name: '',
+        link: ''
+      },
+      dialog: false,
       tableData: [],
       deleteArray: [],
       tableTotal: 0,
-      imageBaseUrl: config.imageBaseUrl
+      imageBaseUrl: config.imageBaseUrl,
+      rules: {
+        name: [{ required: true, message: '请输入技术栈', trigger: 'blur' }],
+        link: [{ required: true, message: '请输入链接', trigger: 'blur' }]
+      }
     }
   },
   methods: {
@@ -124,16 +177,31 @@ export default {
         }
       })
     },
-    filterLabel(labelArray) {
-      let str = ''
-      if (Array.isArray(labelArray)) {
-        let array = []
-        for (let item of labelArray) {
-          array.push(item.label)
+    openDialog(item) {
+      this.linkForm.id = item._id
+      this.dialog = true
+    },
+    cancelDialog() {
+      this.dialog = false
+      this.$refs['linkForm'].resetFields()
+    },
+    async addLink() {
+      this.$refs['linkForm'].validate(async (valid) => {
+        if (valid) {
+          let { data } = await this.$api.addLink(this.linkForm)
+          this.$message.success({ message: data.message })
+          this.cancelDialog()
+          this.search()
+        } else {
+          return false
         }
-        str = array.toString()
-      }
-      return str
+      })
+    },
+    async deleteLink(id, item) {
+      let params = { id, ...item }
+      let { data } = await this.$api.deleteLink(params)
+      this.$message.success({ message: data.message })
+      this.search()
     }
   },
   mounted() {
